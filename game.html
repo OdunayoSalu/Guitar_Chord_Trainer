@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guitar Chord Trainer - Game</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="brand">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 3h2l2 3h6l2-3h2" stroke="#5b9cff" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="3" y="7" width="18" height="12" rx="2" stroke="#5b9cff" stroke-width="1.5"/>
+            <circle cx="8" cy="13" r="2.5" stroke="#5b9cff" stroke-width="1.5"/>
+            <circle cx="16" cy="13" r="2.5" stroke="#5b9cff" stroke-width="1.5"/>
+          </svg>
+          <h1>Guitar Chord Trainer</h1>
+        </div>
+        <div>
+          <a class="btn btn-ghost" href="index.html">Back to Settings</a>
+        </div>
+      </header>
+
+      <section class="card" id="gameCard">
+        <div class="status">
+          <div>
+            <div class="muted">Question <span id="qIndex">1</span> of <span id="qTotal">1</span></div>
+            <div id="currentChord" class="current-chord">—</div>
+            <div class="details" id="details">Set: Root Note <span id="rootNote">—</span> • Root String <span id="rootStr">—</span> <span id="barreStyleWrap" class="hidden">• Barre: <span id="barreStyle">Flat</span></span></div>
+          </div>
+          <div class="row">
+            <button id="pauseBtn" class="btn btn-warning" disabled>Pause</button>
+            <button id="restartBtn" class="btn btn-danger">Restart Set</button>
+            <button id="toggleSettings" class="btn btn-ghost">Settings</button>
+          </div>
+        </div>
+
+        <div id="msg" class="hidden" style="margin-top:10px;"></div>
+
+        <div class="timer" id="timer">0</div>
+        <div class="progress"><div class="bar" id="progressBar"></div></div>
+
+        <div id="preStartPanel" class="settings-panel">
+          <div class="divider"></div>
+          <h3 class="section-title">Upcoming set parameters</h3>
+          <div class="grid">
+            <div class="settings-group third">
+              <div class="section-title">Root Note</div>
+              <div class="badge"> <span id="preRootNote">—</span> </div>
+            </div>
+            <div class="settings-group third">
+              <div class="section-title">Root Note String</div>
+              <div class="badge"> <span id="preRootString">—</span> </div>
+            </div>
+            <div class="settings-group third">
+              <div class="section-title">Low E Barre Style</div>
+              <div class="badge" id="preBarreStyleWrap"> <span id="preBarreStyle">—</span> </div>
+            </div>
+          </div>
+          <div class="controls">
+            <button id="startSetBtn" class="btn btn-primary">Start</button>
+          </div>
+        </div>
+
+        <div class="settings-panel hidden" id="settingsPanel">
+          <div class="divider"></div>
+          <h3 class="section-title">Adjust settings mid-set</h3>
+          <div class="grid">
+            <div class="settings-group">
+              <div class="section-title">Chord Types</div>
+              <div class="fieldset" id="field-chordTypes">
+                <label class="badge"><input type="checkbox" name="chordTypes" value="M"> Major (M)</label>
+                <label class="badge"><input type="checkbox" name="chordTypes" value="m"> Minor (m)</label>
+                <label class="badge"><input type="checkbox" name="chordTypes" value="M7"> Major 7 (M7)</label>
+                <label class="badge"><input type="checkbox" name="chordTypes" value="m7"> Minor 7 (m7)</label>
+                <label class="badge"><input type="checkbox" name="chordTypes" value="7"> Dominant 7 (7)</label>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="section-title">Degrees of Scale</div>
+              <div class="fieldset" id="field-degrees">
+                <label class="badge"><input type="checkbox" name="degrees" value="I"> I</label>
+                <label class="badge"><input type="checkbox" name="degrees" value="II"> II</label>
+                <label class="badge"><input type="checkbox" name="degrees" value="III"> III</label>
+                <label class="badge"><input type="checkbox" name="degrees" value="IV"> IV</label>
+                <label class="badge"><input type="checkbox" name="degrees" value="V"> V</label>
+                <label class="badge"><input type="checkbox" name="degrees" value="VI"> VI</label>
+              </div>
+            </div>
+
+            <div class="settings-group third">
+              <div class="section-title">Root Note String <span class="muted small">(one will be chosen and fixed for the set)</span></div>
+              <div class="fieldset" id="field-rootString">
+                <label class="badge"><input type="checkbox" name="rootStrings" value="E"> Low E string</label>
+                <label class="badge"><input type="checkbox" name="rootStrings" value="A"> A string</label>
+              </div>
+            </div>
+
+            <div class="settings-group third">
+              <div class="section-title">Low E Barre Styles</div>
+              <div class="fieldset" id="field-eBarreStyles">
+                <label class="badge"><input type="checkbox" name="eBarreStyles" value="Flat"> Flat</label>
+                <label class="badge"><input type="checkbox" name="eBarreStyles" value="Overhand"> Overhand</label>
+              </div>
+            </div>
+
+            <div class="settings-group third">
+              <div class="section-title">Number of Questions</div>
+              <div class="row">
+                <input type="number" id="count" min="1" step="1" />
+              </div>
+            </div>
+
+            <div class="settings-group half">
+              <div class="section-title">Duration Range (seconds)</div>
+              <div class="range">
+                <span class="muted">From</span>
+                <input type="number" id="durFrom" min="1" step="1" />
+                <span class="muted">To</span>
+                <input type="number" id="durTo" min="1" step="1" />
+              </div>
+              <div class="muted small">Each chord will randomly last within this range.</div>
+            </div>
+
+            <div class="settings-group half">
+              <div class="section-title">Diatonic Chords Only</div>
+              <label class="badge">
+                <input type="checkbox" id="diatonicOnly" /> Diatonic Chords Only
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="overlay" id="endOverlay">
+      <div class="modal">
+        <h3>Set complete 🎉</h3>
+        <p class="muted">Great job! What would you like to do next?</p>
+        <div class="controls" style="margin-top:8px;">
+          <button id="overlayRestart" class="btn btn-primary">Restart Set</button>
+          <a class="btn btn-ghost" href="index.html">Return to Settings</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>
