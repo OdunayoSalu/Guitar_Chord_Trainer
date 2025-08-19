@@ -29,6 +29,7 @@
             <div class="muted">Question <span id="qIndex">1</span> of <span id="qTotal">1</span></div>
             <div id="currentChord" class="current-chord">—</div>
             <div class="details" id="details">Set: Root Note <span id="rootNote">—</span> • Root String <span id="rootStr">—</span> <span id="barreStyleWrap" class="hidden">• Barre: <span id="barreStyle">Flat</span></span></div>
+            <div class="details small hidden" id="embellishmentsWrap">Embellishments: <span id="embellishments">—</span></div>
           </div>
           <div class="row">
             <button id="pauseBtn" class="btn btn-warning" disabled>Pause</button>
@@ -130,6 +131,90 @@
               <label class="badge">
                 <input type="checkbox" id="diatonicOnly" /> Diatonic Chords Only
               </label>
+            </div>
+
+            <div class="settings-group">
+              <div class="section-title">R&B Mode</div>
+              <label class="badge">
+                <input type="checkbox" id="rnbMode" /> Enable R&B mode (emphasize 7 chords and show embellishments)
+              </label>
+            </div>
+
+            <div class="settings-group hidden" id="rnbPanel">
+              <div class="section-title">R&B Settings</div>
+
+              <div class="settings-group third">
+                <div class="section-title">Embellishments per question</div>
+                <div class="fieldset" id="field-rnbCounts">
+                  <label class="badge"><input type="checkbox" name="rnbCounts" value="1"> 1</label>
+                  <label class="badge"><input type="checkbox" name="rnbCounts" value="2"> 2</label>
+                  <label class="badge"><input type="checkbox" name="rnbCounts" value="3"> 3</label>
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <div class="section-title">Embellishments by chord type and root note string</div>
+                <div class="grid">
+                  <div class="settings-group half">
+                    <div class="section-title">Root Low E</div>
+                    <div class="fieldset" id="field-rnb-E-M7">
+                      <span class="badge muted small" style="border-radius:8px;">M7</span>
+                      <label class="badge"><input type="checkbox" name="rnb_E_M7" value="E+2"> E+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_M7" value="B-2"> B-2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_M7" value="G-1"> G-1</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_M7" value="G+1"> G+1</label>
+                    </div>
+                    <div class="fieldset" id="field-rnb-E-m7" style="margin-top:8px;">
+                      <span class="badge muted small" style="border-radius:8px;">m7</span>
+                      <label class="badge"><input type="checkbox" name="rnb_E_m7" value="E+2"> E+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_m7" value="E+3"> E+3</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_m7" value="B+2"> B+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_m7" value="B+3"> B+3</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_m7" value="G+2"> G+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_m7" value="D+2"> D+2</label>
+                    </div>
+                    <div class="fieldset" id="field-rnb-E-7" style="margin-top:8px;">
+                      <span class="badge muted small" style="border-radius:8px;">7</span>
+                      <label class="badge"><input type="checkbox" name="rnb_E_7" value="E+2"> E+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_7" value="B+2"> B+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_7" value="B+3"> B+3</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_7" value="G+1"> G+1</label>
+                      <label class="badge"><input type="checkbox" name="rnb_E_7" value="D+2"> D+2</label>
+                    </div>
+                  </div>
+
+                  <div class="settings-group half">
+                    <div class="section-title">Root A</div>
+                    <div class="fieldset" id="field-rnb-A-M7">
+                      <span class="badge muted small" style="border-radius:8px;">M7</span>
+                      <label class="badge"><input type="checkbox" name="rnb_A_M7" value="E+2"> E+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_M7" value="B-2"> B-2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_M7" value="G-1"> G-1</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_M7" value="G+1"> G+1</label>
+                    </div>
+                    <div class="fieldset" id="field-rnb-A-m7" style="margin-top:8px;">
+                      <span class="badge muted small" style="border-radius:8px;">m7</span>
+                      <label class="badge"><input type="checkbox" name="rnb_A_m7" value="E+1"> E+1</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_m7" value="E+3"> E+3</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_m7" value="B-1"> B-1</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_m7" value="B+2"> B+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_m7" value="B+3"> B+3</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_m7" value="G+2"> G+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_m7" value="D-2"> D-2</label>
+                    </div>
+                    <div class="fieldset" id="field-rnb-A-7" style="margin-top:8px;">
+                      <span class="badge muted small" style="border-radius:8px;">7</span>
+                      <label class="badge"><input type="checkbox" name="rnb_A_7" value="E+2"> E+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_7" value="E+3"> E+3</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_7" value="B-2"> B-2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_7" value="B+1"> B+1</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_7" value="G+1"> G+1</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_7" value="G+2"> G+2</label>
+                      <label class="badge"><input type="checkbox" name="rnb_A_7" value="D-2"> D-2</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

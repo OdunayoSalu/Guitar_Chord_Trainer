@@ -23,6 +23,8 @@
   function onAnyChange() {
     const s = ChordTrainer.collectSettingsFromDOM(document);
     disableEBarreIfNeeded(s);
+    // R&B visibility
+    updateRnbVisibility(document);
     const errors = ChordTrainer.validateSettings(s);
     if (errors.length) {
       setMsg('error', errors[0]);
@@ -31,14 +33,24 @@
     }
   }
 
+  function updateRnbVisibility(scope) {
+    const root = scope || document;
+    const panel = root.querySelector('#rnbPanel');
+    const toggle = root.querySelector('#rnbMode');
+    if (!panel || !toggle) return;
+    panel.classList.toggle('hidden', !toggle.checked);
+  }
+
   function init() {
     const settings = ChordTrainer.loadSettings();
     ChordTrainer.applySettingsToDOM(document, settings);
     disableEBarreIfNeeded(settings);
+    updateRnbVisibility(document);
 
     ChordTrainer.syncUIEvents(document, (s) => {
       // Save live so game picks it up immediately.
       ChordTrainer.saveSettings(s);
+      updateRnbVisibility(document);
       onAnyChange();
     });
 
@@ -68,6 +80,9 @@
 
     // Initial validation feedback
     onAnyChange();
+
+    // Also handle explicit toggle click for instant expand/collapse UX
+    $('#rnbMode')?.addEventListener('change', () => updateRnbVisibility(document));
   }
 
   document.addEventListener('DOMContentLoaded', init);
