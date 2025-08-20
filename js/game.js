@@ -371,6 +371,10 @@
       state.running = false;
       state.paused = false;
       dlog('restart');
+      // Ensure end overlay is hidden when restarting from the modal
+      if (els.endOverlay) {
+        els.endOverlay.style.display = 'none';
+      }
       // Clear current chord and embellishments
       state.currentChord = null;
       state.currentEmbellishments = [];

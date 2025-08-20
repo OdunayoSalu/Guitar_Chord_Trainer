@@ -221,6 +221,27 @@ input[type="number"], input[type="text"], select {
   margin-top: 18px;
 }
 
+/* More prominent pre-start parameters panel */
+.prestart-emphasis {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(91, 156, 255, 0.35);
+  background: rgba(91, 156, 255, 0.06);
+  border-radius: 12px;
+}
+
+.prestart-emphasis .section-title {
+  color: var(--text);
+  font-size: 16px;
+  letter-spacing: 0.2px;
+}
+
+.prestart-emphasis .badge {
+  font-size: 16px;
+  border-color: rgba(91, 156, 255, 0.5);
+  background: #0f1420;
+}
+
 .settings-toggle {
   display: flex;
   justify-content: space-between;
