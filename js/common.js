@@ -3,8 +3,9 @@
   const STORAGE_KEY = 'gct.settings.v1';
 
   const DEFAULT_SETTINGS = {
-    chordTypes: ['M', 'm', 'M7', 'm7', '7'],
-    degrees: ['I', 'II', 'III', 'IV', 'V', 'VI'],
+    chordTypes: ['M', 'm', 'M7', 'm7', '7', 'dim'],
+    degrees: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'],
+    keyModes: ['Major'],
     rootStrings: ['E', 'A'], // multi-select of 'E' and/or 'A'
     eBarreStyles: ['Flat', 'Overhand'],
     count: 12,
@@ -27,17 +28,30 @@
     },
   };
 
-  const DIATONIC_RULES = {
-    I: ['M', 'M7'],
-    II: ['m', 'm7'],
-    III: ['m', 'm7'],
-    IV: ['M', 'M7'],
-    V: ['M', '7'],
-    VI: ['m', 'm7'],
+  const DIATONIC_RULES_BY_MODE = {
+    Major: {
+      I: ['M', 'M7'],
+      II: ['m', 'm7'],
+      III: ['m', 'm7'],
+      IV: ['M', 'M7'],
+      V: ['M', '7'],
+      VI: ['m', 'm7'],
+      VII: ['dim'],
+    },
+    Minor: {
+      I: ['m', 'm7'],
+      II: ['dim'],
+      III: ['M', 'M7'],
+      IV: ['m', 'm7'],
+      V: ['M', '7'],
+      VI: ['M', 'M7'],
+      VII: ['M', '7'],
+    },
   };
 
-  const ALLOWED_CHORD_TYPES = ['M', 'm', 'M7', 'm7', '7'];
-  const ALLOWED_DEGREES = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+  const ALLOWED_CHORD_TYPES = ['M', 'm', 'M7', 'm7', '7', 'dim'];
+  const ALLOWED_DEGREES = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+  const ALLOWED_KEY_MODES = ['Major', 'Minor'];
   const ALLOWED_E_BARRE_STYLES = ['Flat', 'Overhand'];
   const ALLOWED_ROOT_STRINGS = ['E', 'A'];
   const TWELVE_NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
@@ -46,6 +60,7 @@
     return {
       chordTypes: [...(s.chordTypes || [])],
       degrees: [...(s.degrees || [])],
+      keyModes: [...(s.keyModes || [])],
       rootStrings: [...(s.rootStrings || [])],
       eBarreStyles: [...(s.eBarreStyles || [])],
       count: Number.isFinite(s.count) ? s.count : DEFAULT_SETTINGS.count,
@@ -101,6 +116,9 @@
     out.degrees = out.degrees.filter((d) => ALLOWED_DEGREES.includes(d));
     if (out.degrees.length === 0) out.degrees = [...DEFAULT_SETTINGS.degrees];
 
+    out.keyModes = out.keyModes.filter((m) => ALLOWED_KEY_MODES.includes(m));
+    if (out.keyModes.length === 0) out.keyModes = [...DEFAULT_SETTINGS.keyModes];
+
     // backward-compat: convert single rootString -> array
     if (typeof s?.rootString === 'string') {
       out.rootStrings = [s.rootString];
@@ -149,6 +167,7 @@
     const errors = [];
     if (!s.chordTypes?.length) errors.push('Select at least one chord type.');
     if (!s.degrees?.length) errors.push('Select at least one scale degree.');
+    if (!s.keyModes?.length) errors.push('Select at least one key context.');
     if (!Array.isArray(s.rootStrings) || s.rootStrings.length === 0) errors.push('Choose at least one root note string.');
     if (!s.eBarreStyles || s.eBarreStyles.length === 0) {
       errors.push('Select at least one Low E barre chord style.');
@@ -173,6 +192,8 @@
     setChecks(scope, 'input[name="chordTypes"]', s.chordTypes);
     // degrees
     setChecks(scope, 'input[name="degrees"]', s.degrees);
+    // key modes
+    setChecks(scope, 'input[name="keyModes"]', s.keyModes);
     // root strings
     setChecks(scope, 'input[name="rootStrings"]', s.rootStrings);
     // e barre styles
@@ -199,6 +220,7 @@
     const scope = root || document;
     const chordTypes = getCheckedValues(scope, 'input[name="chordTypes"]');
     const degrees = getCheckedValues(scope, 'input[name="degrees"]');
+    const keyModes = getCheckedValues(scope, 'input[name="keyModes"]');
     const rootStrings = getCheckedValues(scope, 'input[name="rootStrings"]');
     const eBarreStyles = getCheckedValues(scope, 'input[name="eBarreStyles"]');
     const count = parseInt((scope.querySelector('#count') || {}).value, 10);
@@ -223,6 +245,7 @@
     return normalizeSettings({
       chordTypes,
       degrees,
+      keyModes,
       rootStrings,
       eBarreStyles,
       count: Number.isFinite(count) ? count : DEFAULT_SETTINGS.count,
@@ -263,14 +286,18 @@
     return val;
   }
 
-  function deriveChordPool(s) {
+  function deriveChordPool(s, modeOverride) {
     const pool = [];
     const types = new Set(s.chordTypes);
-    for (const degree of s.degrees) {
-      const allowedRaw = s.diatonicOnly ? DIATONIC_RULES[degree] || [] : ALLOWED_CHORD_TYPES;
-      const allowed = s.rnbMode ? allowedRaw.filter((t) => t === '7' || t === 'm7' || t === 'M7') : allowedRaw;
-      for (const t of allowed) {
-        if (types.has(t)) pool.push({ degree, type: t });
+    const keyModes = modeOverride ? [modeOverride] : (s.keyModes || DEFAULT_SETTINGS.keyModes);
+    for (const keyMode of keyModes) {
+      for (const degree of s.degrees) {
+        const modeRules = DIATONIC_RULES_BY_MODE[keyMode] || {};
+        const allowedRaw = s.diatonicOnly ? modeRules[degree] || [] : ALLOWED_CHORD_TYPES;
+        const allowed = s.rnbMode ? allowedRaw.filter((t) => t === '7' || t === 'm7' || t === 'M7') : allowedRaw;
+        for (const t of allowed) {
+          if (types.has(t)) pool.push({ keyMode, degree, type: t });
+        }
       }
     }
     return pool;
@@ -311,8 +338,8 @@
     return pickRandomUnique(pool, n);
   }
 
-  function drawChord(s) {
-    const pool = deriveChordPool(s);
+  function drawChord(s, keyMode) {
+    const pool = deriveChordPool(s, keyMode);
     if (pool.length === 0) return null;
     const idx = Math.floor(Math.random() * pool.length);
     return pool[idx];
@@ -342,14 +369,23 @@
     return TWELVE_NOTES[idx];
   }
 
+  function chooseKeyModeForSet(s) {
+    const selected = (s.keyModes && s.keyModes.length) ? s.keyModes : DEFAULT_SETTINGS.keyModes;
+    const options = selected.filter((mode) => deriveChordPool(s, mode).length > 0);
+    if (options.length === 0) return selected[0] || DEFAULT_SETTINGS.keyModes[0];
+    const idx = Math.floor(Math.random() * options.length);
+    return options[idx];
+  }
+
   function romanFor(degree, type) {
-    const isMinor = type === 'm' || type === 'm7';
+    const isMinor = type === 'm' || type === 'm7' || type === 'dim';
     return isMinor ? degree.toLowerCase() : degree;
   }
 
   function formatChordLabel({ degree, type }) {
-    // Show roman numerals; hide M/m for triads; keep suffix for 7 chords (M7, m7, 7)
+    // Show roman numerals; hide M/m for triads; keep suffix for 7 chords and diminished.
     const roman = romanFor(degree, type);
+    if (type === 'dim') return `${roman}°`;
     if (type === 'M' || type === 'm') return roman;
     return `${roman}${type}`;
   }
@@ -383,6 +419,7 @@
     chooseEBarreStyle,
     chooseRootStringForSet,
     chooseRootNote12,
+    chooseKeyModeForSet,
     formatChordLabel,
     syncUIEvents,
     chooseRnbEmbellishCount,

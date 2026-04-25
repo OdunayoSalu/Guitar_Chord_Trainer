@@ -15,6 +15,7 @@
     msg: $('#msg'),
     rootStr: $('#rootStr'),
     rootNote: $('#rootNote'),
+    keyMode: $('#keyMode'),
     barreStyleWrap: $('#barreStyleWrap'),
     barreStyle: $('#barreStyle'),
     embellishmentsWrap: $('#embellishmentsWrap'),
@@ -24,6 +25,7 @@
     preStartPanel: $('#preStartPanel'),
     startSetBtn: $('#startSetBtn'),
     preRootNote: $('#preRootNote'),
+    preKeyMode: $('#preKeyMode'),
     preRootString: $('#preRootString'),
     preBarreStyle: $('#preBarreStyle'),
     preBarreStyleWrap: $('#preBarreStyleWrap'),
@@ -33,6 +35,7 @@
     settings: null,
     sessionRootString: 'E',
     sessionRootNote: 'C',
+    sessionKeyMode: 'Major',
     sessionBarreStyle: null,
     qTotal: 1,
     currentQ: 1,
@@ -123,6 +126,11 @@
       els.pauseBtn.disabled = true;
       return false;
     }
+    if (state.running && ChordTrainer.deriveChordPool(state.settings, state.sessionKeyMode).length === 0) {
+      setMsg('error', `No possible chords for the current ${state.sessionKeyMode} set. Adjust settings or restart the set.`);
+      els.pauseBtn.disabled = true;
+      return false;
+    }
     setMsg('', '');
     els.pauseBtn.disabled = false;
     return true;
@@ -133,6 +141,7 @@
     els.qTotal.textContent = String(state.qTotal);
     els.rootStr.textContent = state.sessionRootString;
     els.rootNote.textContent = state.sessionRootNote;
+    els.keyMode.textContent = state.sessionKeyMode;
     if (state.sessionBarreStyle) {
       els.barreStyle.textContent = state.sessionBarreStyle;
       els.barreStyleWrap.classList.remove('hidden');
@@ -259,12 +268,18 @@
 
     updateTopStatus();
 
-    // First chord: IM (triad) normally; IM7 in R&B mode
+    // First chord: tonic triad normally; tonic seventh in R&B mode.
     let chord;
     if (state.currentQ === 1) {
-      chord = { degree: 'I', type: state.settings.rnbMode ? 'M7' : 'M' };
+      chord = {
+        keyMode: state.sessionKeyMode,
+        degree: 'I',
+        type: state.sessionKeyMode === 'Minor'
+          ? (state.settings.rnbMode ? 'm7' : 'm')
+          : (state.settings.rnbMode ? 'M7' : 'M'),
+      };
     } else {
-      chord = ChordTrainer.drawChord(state.settings);
+      chord = ChordTrainer.drawChord(state.settings, state.sessionKeyMode);
     }
     if (!chord) {
       setMsg('error', 'No possible chords given current selections. Adjust settings.');
@@ -289,17 +304,19 @@
     // Choose root string and root note for this upcoming set
     const chosenRootString = ChordTrainer.chooseRootStringForSet(state.settings);
     const chosenRootNote = ChordTrainer.chooseRootNote12();
+    const chosenKeyMode = ChordTrainer.chooseKeyModeForSet(state.settings);
     // Always choose an E-barre style for the set regardless of root string
     const chosenBarre = ChordTrainer.chooseEBarreStyle(state.settings);
 
     // Preview values
     els.preRootString.textContent = chosenRootString === 'E' ? 'Low E' : 'A';
     els.preRootNote.textContent = chosenRootNote;
+    els.preKeyMode.textContent = chosenKeyMode;
     // Always show E-barre style preview
     els.preBarreStyle.textContent = chosenBarre || '—';
     els.preBarreStyleWrap.classList.remove('hidden');
 
-    return { chosenRootString, chosenRootNote, chosenBarre };
+    return { chosenRootString, chosenRootNote, chosenKeyMode, chosenBarre };
   }
 
   function refreshPreStart() {
@@ -314,6 +331,7 @@
     // Lock parameters for this set
     state.sessionRootString = prepared.chosenRootString;
     state.sessionRootNote = prepared.chosenRootNote;
+    state.sessionKeyMode = prepared.chosenKeyMode;
     state.sessionBarreStyle = prepared.chosenBarre;
 
     state.qTotal = Math.max(1, Math.floor(state.settings.count));
@@ -322,7 +340,7 @@
     els.pauseBtn.disabled = true; // disabled during count-in
     els.preStartPanel.classList.add('hidden');
     updateTopStatus();
-    dlog('startSet', { rootStr: state.sessionRootString, rootNote: state.sessionRootNote, barre: state.sessionBarreStyle, qTotal: state.qTotal });
+    dlog('startSet', { rootStr: state.sessionRootString, rootNote: state.sessionRootNote, keyMode: state.sessionKeyMode, barre: state.sessionBarreStyle, qTotal: state.qTotal });
 
     // 3-2-1 count-in
     let ci = 3;

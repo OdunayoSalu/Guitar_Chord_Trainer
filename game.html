@@ -29,6 +29,7 @@
             <div class="muted">Question <span id="qIndex">1</span> of <span id="qTotal">1</span></div>
             <div id="currentChord" class="current-chord">—</div>
             <div class="details" id="details">Set: Root Note <span id="rootNote">—</span> • Root String <span id="rootStr">—</span> <span id="barreStyleWrap" class="hidden">• Barre: <span id="barreStyle">Flat</span></span></div>
+            <div class="details small">Key Context: <span id="keyMode">—</span></div>
             <div class="details small hidden" id="embellishmentsWrap">Embellishments: <span id="embellishments">—</span></div>
           </div>
           <div class="row">
@@ -47,6 +48,10 @@
             <div class="settings-group third">
               <div class="section-title">Root Note</div>
               <div class="badge"> <span id="preRootNote">—</span> </div>
+            </div>
+            <div class="settings-group third">
+              <div class="section-title">Key Context</div>
+              <div class="badge"> <span id="preKeyMode">—</span> </div>
             </div>
             <div class="settings-group third">
               <div class="section-title">Root Note String</div>
@@ -77,6 +82,7 @@
                 <label class="badge"><input type="checkbox" name="chordTypes" value="M7"> Major 7 (M7)</label>
                 <label class="badge"><input type="checkbox" name="chordTypes" value="m7"> Minor 7 (m7)</label>
                 <label class="badge"><input type="checkbox" name="chordTypes" value="7"> Dominant 7 (7)</label>
+                <label class="badge"><input type="checkbox" name="chordTypes" value="dim"> Diminished (°)</label>
               </div>
             </div>
 
@@ -89,6 +95,15 @@
                 <label class="badge"><input type="checkbox" name="degrees" value="IV"> IV</label>
                 <label class="badge"><input type="checkbox" name="degrees" value="V"> V</label>
                 <label class="badge"><input type="checkbox" name="degrees" value="VI"> VI</label>
+                <label class="badge"><input type="checkbox" name="degrees" value="VII"> VII</label>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="section-title">Key Context <span class="muted small">(one will be chosen and fixed for the set)</span></div>
+              <div class="fieldset" id="field-keyModes">
+                <label class="badge"><input type="checkbox" name="keyModes" value="Major"> Major</label>
+                <label class="badge"><input type="checkbox" name="keyModes" value="Minor"> Minor</label>
               </div>
             </div>
 
